@@ -1,45 +1,23 @@
 import { useState } from "react";
-import { BrowserRouter } from "react-router-dom";
-import {
-  About,
-  Contact,
-  Experience,
-  Feedbacks,
-  Hero,
-  Navbar,
-  Tech,
-  Works,
-  StarsCanvas,
-} from "./components";
-import Banner from "./components/banner";
-import Footer from "./components/footer";
+import { Canvas } from "@react-three/fiber";
 
-// App
+import { Navbar, Hero, About, Experience, Works, Contact, Footer } from "./components";
+
 const App = () => {
-  const [hide, setHide] = useState(true);
+  const [hide, setHide] = useState(false);
 
   return (
-    <BrowserRouter>
-      <Banner hide={hide} setHide={setHide} />
-      <div className="relative z-0 bg-primary">
-        <div className="bg-hero-pattern bg-cover bg-no-repeat bg-center">
-          <Navbar hide={hide} />
-          <Hero />
-        </div>
-        <About />
-        <Experience />
-        <Tech />
-        <Works />
-        <Feedbacks />
-
-        {/* Contact */}
-        <div className="relative z-0">
-          <Contact />
-          <StarsCanvas />
-        </div>
-        <Footer />
+    <div className="relative z-0 bg-primary">
+      <div className="relative z-0">
+        <Navbar hide={hide} />
+        <Hero />
       </div>
-    </BrowserRouter>
+      <About />
+      <Experience />
+      <Works />
+      <Contact />
+      <Footer />
+    </div>
   );
 };
 
