@@ -27,7 +27,7 @@ import typescript from "./tech/express.png";
 
 
 import meta from "./company/grey.png";
-import shopify from "./company/tekvill.com_.png";
+import shopify from "./company/Tekvill.png";
 import starbucks from "./company/starbucks.png";
 import tesla from "./company/tesla.png";
 

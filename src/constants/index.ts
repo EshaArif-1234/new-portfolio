@@ -171,7 +171,7 @@ export const EXPERIENCES = [
     title: "Mern Stack,Wordpress",
     company_name: "Tekvill",
     icon: shopify,
-    iconBg: "#fff",
+    iconBg: "#696669",
     date: "november 2023 - present",
     points: [
       "Started with WordPress at Tekvill, building responsive, SEO-friendly websites with custom themes and plugins.",
