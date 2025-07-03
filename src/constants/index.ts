@@ -185,7 +185,7 @@ export const EXPERIENCES = [
     company_name: "Bytewise",
     icon: meta,
     iconBg: "#E6DEDD",
-    date: "september 2024 - november 2024",
+    date: "september 2023 - november 2023",
     points: [
       "Developing and maintaining web applications using React.js and other related technologies.",
       "Collaborating with cross-functional teams including designers, product managers, and other developers to create high-quality products.",
