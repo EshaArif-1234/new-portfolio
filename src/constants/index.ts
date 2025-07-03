@@ -37,6 +37,7 @@ import {
   twitter,
   github,
   email,
+  project7,
 } from "../assets";
 
 // Navbar Links
@@ -352,6 +353,27 @@ export const PROJECTS = [
     image: project6,
     source_code_link: "https://github.com/sanidhyy/finame",
     live_site_link: "https://finame.ca/",
+  },
+  {
+    name: "Physiowell",
+    description:
+      "PhysioWell.ae is a professional physiotherapy website offering personalized rehabilitation and wellness services in the UAE. The site showcases treatments, expert therapists, and convenient booking options through a clean, responsive design tailored for patient engagement.",
+    tags: [
+      {
+        name: "WordPress",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "PHP",
+        color: "green-text-gradient"
+      },
+      {
+        name: "Custom Theme",
+        color: "pink-text-gradient",
+      },
+    ],
+    image: project7,
+    live_site_link: "https://physiowell.ae/",
   },
 ] as const;
 

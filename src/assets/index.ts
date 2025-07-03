@@ -37,6 +37,7 @@ import project3 from "./projects/essura.png";
 import project4 from "./projects/tekvill.png";
 import project5 from "./projects/zeroswipe.png";
 import project6 from "./projects/finame.png";
+import project7 from "./projects/physiowell.png";
 
 import user1 from "./testimonials/user1.jpg";
 import user2 from "./testimonials/user2.jpg";
@@ -81,6 +82,7 @@ export {
   project4,
   project5,
   project6,
+  project7,
   user1,
   user2,
   user3,
