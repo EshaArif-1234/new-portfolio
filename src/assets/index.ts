@@ -26,8 +26,8 @@ import threejs from "./tech/elementor.png";
 import typescript from "./tech/express.png";
 
 
-import meta from "./company/meta.png";
-import shopify from "./company/shopify.png";
+import meta from "./company/grey.png";
+import shopify from "./company/tekvill.com_.png";
 import starbucks from "./company/starbucks.png";
 import tesla from "./company/tesla.png";
 
@@ -46,6 +46,7 @@ import github from "./socials/github.svg";
 import linkedin from "./socials/linkedin.svg";
 import twitter from "./socials/twitter.svg";
 import youtube from "./socials/youtube.svg";
+import email from "./socials/email.svg";
 
 export {
   backend,
@@ -87,4 +88,5 @@ export {
   youtube,
   linkedin,
   twitter,
+  email,
 };
