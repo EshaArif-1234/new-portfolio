@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+
+
 import { logo, menu, close } from "../assets";
 import { NAV_LINKS } from "../constants";
 import { styles } from "../styles";
@@ -9,157 +11,174 @@ type NavbarProps = {
   hide: boolean;
 };
 
+// Navbar
 export const Navbar = ({ hide }: NavbarProps) => {
   const [active, setActive] = useState("");
   const [toggle, setToggle] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(false);
 
+ 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setScrolled(scrollTop > 10);
-      
-      // Update active section based on scroll position
-      NAV_LINKS.forEach((link) => {
-        if (!link.link?.startsWith('#')) return;
-        
-        const sectionId = link.link.substring(1);
-        const section = document.getElementById(sectionId);
-        if (section) {
-          const sectionTop = section.offsetTop - 100;
-          const sectionBottom = sectionTop + section.offsetHeight;
-          
-          if (scrollTop >= sectionTop && scrollTop < sectionBottom) {
-            setActive(link.title);
-          }
-        }
-      });
+      if (window.scrollY > 10) {
+        setIsAtBottom(true);
+      } else {
+        setIsAtBottom(false);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLinkClick = (link: typeof NAV_LINKS[0]) => {
-    setActive(link.title);
-    setToggle(false);
-    
-    if (link.link?.startsWith('#')) {
-      const sectionId = link.link.substring(1);
-      const section = document.getElementById(sectionId);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
-
   return (
-    <nav
+   
+      <nav
       className={cn(
         styles.paddingX,
-        "w-full flex items-center py-5 fixed top-0 z-50 bg-primary transition-all duration-300",
-        scrolled || hide ? "shadow-lg" : "mt-20"
+        "w-full flex items-center py-5 fixed top-0 z-20 bg-primary",
+        isAtBottom || hide ? "mt-0" : "mt-20"
       )}
-    >
-      <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2"
-          onClick={() => {
-            setActive("");
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-        >
-          <img src={logo} alt="Logo" className="w-9 h-9 object-contain" />
-          <p className="text-white text-[18px] font-bold cursor-pointer flex">
-            Shubham&nbsp;<span className="sm:block hidden">| Developer</span>
-          </p>
-        </Link>
+      >
+        <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex items-center gap-2"
+            onClick={() => {
+              setActive("");
+              window.scrollTo(0, 0);
+            }}
+          >
+            <img src={logo} alt="Logo" className="w-9 h-9 object-contain" />
+            <p className="text-white text-[18px] font-bold cursor-pointer flex">
+              Esha&nbsp;<span className="sm:block hidden">| Developer</span>
+            </p>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <ul className="list-none hidden sm:flex flex-row gap-10">
-          {NAV_LINKS.map((link) => (
-            <li
-              key={link.id}
+          {/* Nav Links (Desktop) */}
+          <ul className="list-none hidden sm:flex flex-row gap-10">
+            {NAV_LINKS.map((link) => (
+              <li
+                key={link.id}
+                className={cn(
+                  active === link.title ? "text-white" : "text-secondary",
+                  "hover:text-white text-[18px] font-medium cursor-pointer"
+                )}
+                onClick={() => {
+                  if (!link.link) return;
+                  if (link.link.startsWith("#")) {
+                    const id = link.link.substring(1);
+                    setActive(link.title);
+                  } else {
+                    setActive(link.title);
+                  }
+                }}
+              >
+                {link.link ? (
+                  link.link.startsWith("#") ? (
+                    <a
+                      href={link.link}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const id = link.link.substring(1);
+                        setActive(link.title);
+                      }}
+                    >
+                      {link.title}
+                    </a>
+                  ) : (
+                    <a href={link.link} target="_blank" rel="noreferrer noopener">
+                      {link.title}
+                    </a>
+                  )
+                ) : (
+                  <a href={`#${link.id}`}>{link.title}</a>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {/* Hamburger Menu (Mobile) */}
+          <div className="sm:hidden flex flex-1 justify-end items-center">
+            <img
+              src={toggle ? close : menu}
+              alt="Menu"
+              className="w-[28px] h-[28px] object-contain cursor-pointer"
+              onClick={() => setToggle(!toggle)}
+            />
+
+            <div
               className={cn(
-                active === link.title ? "text-white" : "text-secondary",
-                "hover:text-white text-[18px] font-medium cursor-pointer transition-colors"
+                !toggle ? "hidden" : "flex",
+                "p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-40 rounded-xl"
               )}
             >
-              {link.link ? (
-                link.link.startsWith('#') ? (
-                  <a
-                    href={link.link}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleLinkClick(link);
+              <ul className="list-none flex justify-end items-start flex-col gap-4">
+                {NAV_LINKS.map((link) => (
+                  <li
+                    key={link.id}
+                    className={cn(
+                      active === link.title ? "text-white" : "text-secondary",
+                      "font-poppins font-medium cursor-pointer text-[16px]"
+                    )}
+                    onClick={() => {
+                      if (!link.link) return;
+                      if (link.link.startsWith("#")) {
+                        const id = link.link.substring(1);
+                        setActive(link.title);
+                      } else {
+                        setActive(link.title);
+                        setToggle(false);
+                      }
                     }}
                   >
-                    {link.title}
-                  </a>
-                ) : (
-                  <a href={link.link} target="_blank" rel="noreferrer noopener">
-                    {link.title}
-                  </a>
-                )
-              ) : (
-                <a 
-                  href={`#${link.id}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick({ ...link, link: `#${link.id}` });
-                  }}
-                >
-                  {link.title}
-                </a>
-              )}
-            </li>
-          ))}
-        </ul>
+                    {link.link ? (
+                      link.link.startsWith("#") ? (
+                        <a
+                          href={link.link}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const id = link.link.substring(1);
+                            setActive(link.title);
+                          }}
+                        >
+                          {link.title}
+                        </a>
+                      ) : (
+                        <a
+                          href={link.link}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          {link.title}
+                        </a>
+                      )
+                    ) : (
+                      <a href={`#${link.id}`}>{link.title}</a>
+                    )}
+                  </li>
+                ))}
 
-        {/* Mobile Navigation */}
-        <div className="sm:hidden flex flex-1 justify-end items-center">
-          <img
-            src={toggle ? close : menu}
-            alt="Menu"
-            className="w-[28px] h-[28px] object-contain cursor-pointer z-50"
-            onClick={() => setToggle(!toggle)}
-          />
-
-          <div
-            className={cn(
-              !toggle ? "hidden" : "flex",
-              "p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-40 rounded-xl"
-            )}
-          >
-            <ul className="list-none flex justify-end items-start flex-col gap-4">
-              {NAV_LINKS.map((link) => (
+                {/* Optional: Hardcoded Project Link */}
                 <li
-                  key={link.id}
                   className={cn(
-                    active === link.title ? "text-white" : "text-secondary",
+                    active === "projects" ? "text-white" : "text-secondary",
                     "font-poppins font-medium cursor-pointer text-[16px]"
                   )}
-                  onClick={() => handleLinkClick(link)}
+                  onClick={() => {
+                    setToggle(false);
+                    setActive("projects");
+                  }}
                 >
-                  {link.link ? (
-                    link.link.startsWith('#') ? (
-                      <a href={link.link}>{link.title}</a>
-                    ) : (
-                      <a href={link.link} target="_blank" rel="noreferrer noopener">
-                        {link.title}
-                      </a>
-                    )
-                  ) : (
-                    <a href={`#${link.id}`}>{link.title}</a>
-                  )}
+                  Projects
                 </li>
-              ))}
-            </ul>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
   );
 };
