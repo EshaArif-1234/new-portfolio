@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-
 import { logo, menu, close } from "../assets";
 import { NAV_LINKS } from "../constants";
 import { styles } from "../styles";
@@ -10,33 +9,47 @@ type NavbarProps = {
   hide: boolean;
 };
 
-// Navbar
 export const Navbar = ({ hide }: NavbarProps) => {
-  // state variables
   const [active, setActive] = useState("");
   const [toggle, setToggle] = useState(false);
-  const [isAtBottom, setIsAtBottom] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsAtBottom(true);
-      } else {
-        setIsAtBottom(false);
-      }
+      const scrollTop = window.scrollY;
+      setScrolled(scrollTop > 10);
+      
+      // Update active section based on scroll position
+      NAV_LINKS.forEach((link) => {
+        if (!link.link?.startsWith('#')) return;
+        
+        const sectionId = link.link.substring(1);
+        const section = document.getElementById(sectionId);
+        if (section) {
+          const sectionTop = section.offsetTop - 100;
+          const sectionBottom = sectionTop + section.offsetHeight;
+          
+          if (scrollTop >= sectionTop && scrollTop < sectionBottom) {
+            setActive(link.title);
+          }
+        }
+      });
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setActive(id);
-      setToggle(false);
+  const handleLinkClick = (link: typeof NAV_LINKS[0]) => {
+    setActive(link.title);
+    setToggle(false);
+    
+    if (link.link?.startsWith('#')) {
+      const sectionId = link.link.substring(1);
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -44,8 +57,8 @@ export const Navbar = ({ hide }: NavbarProps) => {
     <nav
       className={cn(
         styles.paddingX,
-        "w-full flex items-center py-5 fixed top-0 bg-primary",
-        isAtBottom || hide ? "mt-0" : "mt-20"
+        "w-full flex items-center py-5 fixed top-0 z-50 bg-primary transition-all duration-300",
+        scrolled || hide ? "shadow-lg" : "mt-20"
       )}
     >
       <div className="w-full flex justify-between items-center max-w-7xl mx-auto">
@@ -55,38 +68,32 @@ export const Navbar = ({ hide }: NavbarProps) => {
           className="flex items-center gap-2"
           onClick={() => {
             setActive("");
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
           <img src={logo} alt="Logo" className="w-9 h-9 object-contain" />
           <p className="text-white text-[18px] font-bold cursor-pointer flex">
-            Esha&nbsp;<span className="sm:block hidden">| Developer</span>
+            Shubham&nbsp;<span className="sm:block hidden">| Developer</span>
           </p>
         </Link>
 
-        {/* Nav Links (Desktop) */}
+        {/* Desktop Navigation */}
         <ul className="list-none hidden sm:flex flex-row gap-10">
           {NAV_LINKS.map((link) => (
             <li
               key={link.id}
               className={cn(
                 active === link.title ? "text-white" : "text-secondary",
-                "hover:text-white text-[18px] font-medium cursor-pointer"
+                "hover:text-white text-[18px] font-medium cursor-pointer transition-colors"
               )}
-              onClick={() => !link.link && setActive(link.title)}
             >
               {link.link ? (
-                link.link.startsWith("#") ? (
-                  <a 
+                link.link.startsWith('#') ? (
+                  <a
                     href={link.link}
                     onClick={(e) => {
                       e.preventDefault();
-                      const id = link.link.substring(1);
-                      const element = document.getElementById(id);
-                      if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                        setActive(link.title);
-                      }
+                      handleLinkClick(link);
                     }}
                   >
                     {link.title}
@@ -97,28 +104,35 @@ export const Navbar = ({ hide }: NavbarProps) => {
                   </a>
                 )
               ) : (
-                <a href={`#${link.id}`}>{link.title}</a>
+                <a 
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLinkClick({ ...link, link: `#${link.id}` });
+                  }}
+                >
+                  {link.title}
+                </a>
               )}
             </li>
           ))}
         </ul>
 
-        {/* Hamburger Menu (Mobile) */}
+        {/* Mobile Navigation */}
         <div className="sm:hidden flex flex-1 justify-end items-center">
           <img
             src={toggle ? close : menu}
             alt="Menu"
-            className="w-[28px] h-[28px] object-contain cursor-pointer"
+            className="w-[28px] h-[28px] object-contain cursor-pointer z-50"
             onClick={() => setToggle(!toggle)}
           />
 
           <div
             className={cn(
               !toggle ? "hidden" : "flex",
-              "p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-10 rounded-xl"
+              "p-6 black-gradient absolute top-20 right-0 mx-4 my-2 min-w-[140px] z-40 rounded-xl"
             )}
           >
-            {/* Nav Links (Mobile) */}
             <ul className="list-none flex justify-end items-start flex-col gap-4">
               {NAV_LINKS.map((link) => (
                 <li
@@ -127,33 +141,13 @@ export const Navbar = ({ hide }: NavbarProps) => {
                     active === link.title ? "text-white" : "text-secondary",
                     "font-poppins font-medium cursor-pointer text-[16px]"
                   )}
-                  onClick={() => {
-                    !link.link && setToggle(!toggle);
-                    !link.link && setActive(link.title);
-                  }}
+                  onClick={() => handleLinkClick(link)}
                 >
                   {link.link ? (
-                    link.link.startsWith("#") ? (
-                      <a 
-                        href={link.link}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          const id = link.link.substring(1);
-                          const element = document.getElementById(id);
-                          if (element) {
-                            element.scrollIntoView({ behavior: 'smooth' });
-                            setActive(link.title);
-                          }
-                        }}
-                      >
-                        {link.title}
-                      </a>
+                    link.link.startsWith('#') ? (
+                      <a href={link.link}>{link.title}</a>
                     ) : (
-                      <a
-                        href={link.link}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
+                      <a href={link.link} target="_blank" rel="noreferrer noopener">
                         {link.title}
                       </a>
                     )
@@ -162,18 +156,6 @@ export const Navbar = ({ hide }: NavbarProps) => {
                   )}
                 </li>
               ))}
-              <li
-                className={cn(
-                  active === "projects" ? "text-white" : "text-secondary",
-                  "font-poppins font-medium cursor-pointer text-[16px]"
-                )}
-                onClick={() => {
-                  scrollToSection("projects");
-                  setToggle(!toggle);
-                }}
-              >
-                Projects
-              </li>
             </ul>
           </div>
         </div>
